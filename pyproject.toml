@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "indian-address-parser"
+version = "0.1.0"
+description = ""
+authors = ["Shrikant Dhayje <shrikantdhayaje@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "indian_address_parser"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
