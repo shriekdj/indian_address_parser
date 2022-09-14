@@ -12,6 +12,8 @@ Just Do this to install indian_address_parser
 pip install https://github.com/shriekdj/indian_address_parser/releases/download/v0.0.1/indian_address_parser-0.1.0-py3-none-any.whl
 ```
 
+Currently package is not available directly on PyPi
+
 ```python
 from indian_address_parser import PostalAddress
 
