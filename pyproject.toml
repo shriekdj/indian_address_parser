@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "indian-address-parser"
-version = "0.1.0"
+version = "0.1.2"
 description = "I Created this library to parse indian address as accurate as possible and this library is opensource so you can contribute to it also."
 authors = ["Shrikant Dhayje <shrikantdhayaje@gmail.com>"]
 license = "MIT"

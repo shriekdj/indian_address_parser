@@ -185,6 +185,7 @@ def main():
 
     print('pin codes found',postal_address['pin_codes_found'])  # Press Ctrl+F8 to toggle the breakpoint.
     print('states found',postal_address['states_found'])  # Press Ctrl+F8 to toggle the breakpoint.
+    print(postal_address)
     # postal_address = postal_address.parse_dict()
     # pprint(address_as_dict)  # Press Ctrl+F8 to toggle the breakpoint.
 
