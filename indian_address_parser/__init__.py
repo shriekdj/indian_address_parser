@@ -1,9 +1,10 @@
 import re
 from pprint import pprint
+import csv
 
 keywords_for_street_name = ('street name', 'street', 'marg', 'road', 'path', 'rasta')
 
-keywords_for_landmark = ('behind', 'near', 'above', 'opp.', 'opp:', 'opposite')
+keywords_for_landmarks = ('behind', 'near', 'above', 'opp.', 'opp:', 'opposite')
 
 keywords_for_shop_house_no = ('shop n', 'shop number', 'gala n', 'store n', 'house n', 'home n', 'apartment', 'appt', 'flat', 'building n', 'room n', 'niwas')
 
@@ -118,9 +119,37 @@ dict_of_states = {
     ],
 }
 
+class KeywordsProvider:
+    def __init__(self, csv_file_name):
+        self.keywords_for_street_name = set()
+        self.keywords_for_landmarks = set()
+        self.keywords_for_shop_house_no = set()
+        self.keywords_for_district_name = set()
+        self.keywords_for_village_or_city = set()
+        self.dict_of_states = dict_of_states
+
+
+        with open(csv_file_name, encoding='utf-8', newline='\n') as csv_file:
+            reader = reader = csv.DictReader(csv_file)
+
+            for row in reader:
+                if row['keywords_for_street_name'] != '':
+                    self.keywords_for_street_name.add(row['keywords_for_street_name'])
+                if row['keywords_for_landmarks'] != '':
+                    self.keywords_for_landmarks.add(row['keywords_for_landmarks'])
+                if row['keywords_for_shop_house_no'] != '':
+                    self.keywords_for_shop_house_no.add(row['keywords_for_shop_house_no'])
+                if row['keywords_for_district_name'] != '':
+                    self.keywords_for_district_name.add(row['keywords_for_district_name'])
+                if row['keywords_for_village_or_city'] != '':
+                    self.keywords_for_village_or_city.add(row['keywords_for_village_or_city'])
+                # if (row['state_name'] != '') and (row['state_keyword'] != ''):
+                #     self.dict_of_states[row['state_name']].append(row['state_keyword'])
+
 
 class PostalAddress:
-    def __init__(self, raw_address: str):
+    def __init__(self, raw_address: str, keywords):
+
         self.raw_address: str = raw_address.lower().strip()
         self.country: str = "india"
 
@@ -129,19 +158,19 @@ class PostalAddress:
                     [single_data.strip() for single_data in self.raw_address.split(sep=',')]
                 )
             )
-        self.pin_codes_found = list(set(re.findall("\d{6,6}", self.raw_address)))
+        self.pin_codes_found = ', '.join(set(re.findall("\d{6,}", self.raw_address)))
 
         # parse states
 
         self.states_found = set()
 
-        for key in dict_of_states.keys():
+        for key in keywords.dict_of_states.keys():
             for keyword in dict_of_states[key]:
                 for word in self.words_in_address:
                     if word.find(keyword) != -1:
                         self.states_found.add(key)
 
-        self.states_found = list(self.states_found)
+        self.states_found = ', '.join(self.states_found)
 
         self.street_names_found = set()
         self.landmarks_found = set()
@@ -151,31 +180,31 @@ class PostalAddress:
 
         # parse other details
         for word in self.words_in_address:
-            for street_name in keywords_for_street_name:
+            for street_name in keywords.keywords_for_street_name:
                 if word.find(street_name) != -1:
-                    self.street_names_found.add(word)
+                    self.street_names_found.add(word.capitalize())
             
-            for landmark in keywords_for_landmark:
+            for landmark in keywords.keywords_for_landmarks:
                 if word.find(landmark) != -1:
-                    self.landmarks_found.add(word)
+                    self.landmarks_found.add(word.capitalize())
             
-            for shop_house_no in keywords_for_shop_house_no:
+            for shop_house_no in keywords.keywords_for_shop_house_no:
                 if word.find(shop_house_no) != -1:
-                    self.shop_house_nos_found.add(word)
+                    self.shop_house_nos_found.add(word.capitalize())
 
-            for district in keywords_for_district_name:
+            for district in keywords.keywords_for_district_name:
                 if word.find(district) != -1:
-                    self.districts_found.add(word)
+                    self.districts_found.add(word.capitalize())
 
-            for village_or_city in keywords_for_village_or_city:
+            for village_or_city in keywords.keywords_for_village_or_city:
                 if word.find(village_or_city) != -1:
-                    self.village_or_citys_found.add(word)
+                    self.village_or_citys_found.add(word.capitalize())
         
-        self.street_names_found = list(self.street_names_found)
-        self.landmarks_found = list(self.landmarks_found)
-        self.shop_house_nos_found = list(self.shop_house_nos_found)
-        self.districts_found = list(self.districts_found)
-        self.village_or_citys_found = list(self.village_or_citys_found)
+        self.street_names_found = ', '.join(self.street_names_found)
+        self.landmarks_found = ', '.join(self.landmarks_found)
+        self.shop_house_nos_found = ', '.join(self.shop_house_nos_found)
+        self.districts_found = ', '.join(self.districts_found)
+        self.village_or_citys_found = ', '.join(self.village_or_citys_found)
 
 
 def main():

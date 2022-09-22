@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "indian_address_parser"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3"
 
 
 [build-system]
