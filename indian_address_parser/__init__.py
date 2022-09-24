@@ -119,6 +119,20 @@ dict_of_states = {
     ],
 }
 
+# words_in_address = list(
+#                 set(
+#                     [single_data.strip() for single_data in self.raw_address.split(sep=',')]
+#                 )
+#             )
+
+def get_words_list(raw_text):
+    words_list = list()
+    for single_data in raw_text.split(sep=','):
+        if (single_data != '') or (single_data != ' '):
+            if single_data.strip() not in words_list:
+                words_list.append(single_data.strip())
+    return words_list
+
 class KeywordsProvider:
     def __init__(self, csv_file_name):
         self.keywords_for_street_name = set()
@@ -153,11 +167,12 @@ class PostalAddress:
         self.raw_address: str = raw_address.lower().strip()
         self.country: str = "india"
 
-        self.words_in_address = list(
-                set(
-                    [single_data.strip() for single_data in self.raw_address.split(sep=',')]
-                )
-            )
+        # self.words_in_address = list(
+        #         set(
+        #             [single_data.strip() for single_data in self.raw_address.split(sep=',')]
+        #         )
+        #     )
+        self.words_in_address = get_words_list(self.raw_address)
         self.pin_codes_found = ', '.join(set(re.findall("\d{6,}", self.raw_address)))
 
         # parse states
@@ -179,26 +194,41 @@ class PostalAddress:
         self.village_or_citys_found = set()
 
         # parse other details
-        for word in self.words_in_address:
-            for street_name in keywords.keywords_for_street_name:
-                if word.find(street_name) != -1:
-                    self.street_names_found.add(word.capitalize())
-            
+        for word in self.words_in_address:            
             for landmark in keywords.keywords_for_landmarks:
-                if word.find(landmark) != -1:
-                    self.landmarks_found.add(word.capitalize())
+                # if word.find(landmark) != -1:
+                if landmark in word:
+                    self.landmarks_found.add(word)
+                    if word.capitalize() in self.words_in_address:
+                        self.words_in_address.remove(word)
             
             for shop_house_no in keywords.keywords_for_shop_house_no:
-                if word.find(shop_house_no) != -1:
-                    self.shop_house_nos_found.add(word.capitalize())
+                # if word.find(shop_house_no) != -1:
+                if shop_house_no in word:
+                    self.shop_house_nos_found.add(word)
+                    if word.capitalize() in self.words_in_address:
+                        self.words_in_address.remove(word)
+
+            for street_name in keywords.keywords_for_street_name:
+                # if word.find(street_name) != -1:
+                if street_name in word:
+                    self.street_names_found.add(word)
+                    if word.capitalize() in self.words_in_address:
+                        self.words_in_address.remove(word)
 
             for district in keywords.keywords_for_district_name:
-                if word.find(district) != -1:
-                    self.districts_found.add(word.capitalize())
+                # if word.find(district) != -1:
+                if district in word:
+                    self.districts_found.add(word)
+                    if word.capitalize() in self.words_in_address:
+                        self.words_in_address.remove(word)
 
             for village_or_city in keywords.keywords_for_village_or_city:
-                if word.find(village_or_city) != -1:
-                    self.village_or_citys_found.add(word.capitalize())
+                # if word.find(village_or_city) != -1:
+                if village_or_city in word:
+                    self.village_or_citys_found.add(word)
+                    if word.capitalize() in self.words_in_address:
+                        self.words_in_address.remove(word)
         
         self.street_names_found = ', '.join(self.street_names_found)
         self.landmarks_found = ', '.join(self.landmarks_found)
