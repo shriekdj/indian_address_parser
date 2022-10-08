@@ -7,6 +7,7 @@ keywords_for_street_name = ('street name', 'street', 'marg', 'road', 'path', 'ra
 keywords_for_landmarks = ('behind', 'near', 'above', 'opp.', 'opp:', 'opposite')
 
 keywords_for_shop_house_no = ('shop n', 'shop number', 'gala n', 'store n', 'house n', 'home n', 'apartment', 'appt', 'flat', 'building n', 'room n', 'niwas')
+# keywords_for_shop_house_no = ('shop n', 'shop number', 'gala n', 'store n', 'house n', 'home n', 'apartment', 'appt', 'flat', 'building n', 'room n', 'niwas')
 
 keywords_for_district_name = ('dist', 'district', 'jilha')
 keywords_for_village_or_city = ('gaon', 'gav', 'village', 'pur', 'shahar', 'city', 'taluka', 'town')
@@ -140,13 +141,14 @@ class KeywordsProvider:
         self.keywords_for_shop_house_no = set()
         self.keywords_for_district_name = set()
         self.keywords_for_village_or_city = set()
-        self.dict_of_states = dict_of_states
+        self.dict_of_states = dict()
 
 
         with open(csv_file_name, encoding='utf-8', newline='\n') as csv_file:
-            reader = reader = csv.DictReader(csv_file)
+            reader = csv.DictReader(csv_file)
 
             for row in reader:
+
                 if row['keywords_for_street_name'] != '':
                     self.keywords_for_street_name.add(row['keywords_for_street_name'])
                 if row['keywords_for_landmarks'] != '':
@@ -192,6 +194,7 @@ class PostalAddress:
         self.shop_house_nos_found = set()
         self.districts_found = set()
         self.village_or_citys_found = set()
+        self.building_names_found = set()
 
         # parse other details
         for word in self.words_in_address:            
@@ -229,12 +232,15 @@ class PostalAddress:
                     self.village_or_citys_found.add(word)
                     if word.capitalize() in self.words_in_address:
                         self.words_in_address.remove(word)
-        
+
+
         self.street_names_found = ', '.join(self.street_names_found)
         self.landmarks_found = ', '.join(self.landmarks_found)
         self.shop_house_nos_found = ', '.join(self.shop_house_nos_found)
         self.districts_found = ', '.join(self.districts_found)
         self.village_or_citys_found = ', '.join(self.village_or_citys_found)
+
+#         self.building_names_found = ', '.join(self.building_names_found)
 
 
 def main():
